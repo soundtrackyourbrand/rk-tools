@@ -388,23 +388,10 @@ struct pack_part* find_package_byname(const char *name)
 
 void append_package(const char *name, const char *path)
 {
-	struct partition *p_part;
 	struct pack_part *p_pack = &package_image.packages[package_image.num_package];
 
 	strncpy(p_pack->name, name, sizeof(p_pack->name));
 	strncpy(p_pack->filename, path, sizeof(p_pack->filename));
-
-	p_part = find_partition_byname(name);
-	if (p_part)
-	{
-		printf("Found partition name: %s path: %s addr: 0x%08X size: 0x%08X\n", name, path, p_part->start, p_part->size);
-		p_pack->nand_addr = p_part->start;
-		p_pack->nand_size = p_part->size;
-	} else {
-		printf("Did not find package name: '%s' path: '%s'\n", name, path);
-		p_pack->nand_addr = (unsigned int)-1;
-		p_pack->nand_size = 0;
-	}
 
 	package_image.num_package++;
 }
@@ -541,6 +528,26 @@ void append_crc(FILE *fp)
 	fwrite(&crc, 1, sizeof(crc), fp);
 }
 
+int resolve_packages() {
+	unsigned int i;
+	for (i = 0; i < package_image.num_package; ++i) {
+		struct partition *p_part;
+		struct pack_part *p_pack = &package_image.packages[i];
+		p_part = find_partition_byname(p_pack->name);
+		if (p_part)
+		{
+			printf("Found partition name: %s addr: 0x%08X size: 0x%08X\n", p_pack->name, p_part->start, p_part->size);
+			p_pack->nand_addr = p_part->start;
+			p_pack->nand_size = p_part->size;
+		} else {
+			printf("Did not find package name: '%s'\n", p_pack->name);
+			p_pack->nand_addr = (unsigned int)-1;
+			p_pack->nand_size = 0;
+		}
+	}
+	return 0;
+}
+
 int pack_update(const char* srcdir, const char* dstfile) {
 	struct update_header header;
 	FILE *fp = NULL;
@@ -562,6 +569,9 @@ int pack_update(const char* srcdir, const char* dstfile) {
 		return -1;
 
 	if (get_packages("package-file"))
+		return -1;
+
+	if (resolve_packages())
 		return -1;
 
 	fwrite(&header, sizeof(header), 1, fp);
