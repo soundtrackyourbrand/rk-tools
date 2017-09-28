@@ -13,6 +13,8 @@
 #include "rkcrc.h"
 #include "rkafp.h"
 
+struct pack_part* find_package_byname(const char *name);
+struct partition* find_partition_byname(const char *name);
 unsigned int filestream_crc(FILE *fs, size_t stream_len)
 {
 	char buffer[1024];
@@ -294,13 +296,20 @@ int action_parse_key(char *key, char *value) {
 	return 0;
 }
 
-int parse_parameter(const char *fname) {
+int parse_parameter() {
 	char line[512], *startp, *endp;
 	char *key, *value;
 	FILE *fp;
+	struct pack_part *parameter_package;
 
-	if ((fp = fopen(fname, "r")) == NULL) {
-		printf("Can't open file: %s\n", fname);
+	parameter_package = find_package_byname("parameters");
+	if (!parameter_package) {
+		printf("Did not find parameters entry in package-file\n");
+		return -1;
+	}
+
+	if ((fp = fopen(parameter_package->filename, "r")) == NULL) {
+		printf("Can't open file: %s\n", parameter_package->filename);
 		return -1;
 	}
 
@@ -565,10 +574,10 @@ int pack_update(const char* srcdir, const char* dstfile) {
 	if (chdir(srcdir))
 		return -1;
 
-	if (parse_parameter("parameter_3188_box_x7_r3_4g"))
+	if (get_packages("package-file"))
 		return -1;
 
-	if (get_packages("package-file"))
+	if (parse_parameter())
 		return -1;
 
 	if (resolve_packages())
