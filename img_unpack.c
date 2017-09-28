@@ -3,8 +3,8 @@
 #include <string.h>
 #include <limits.h>
 #include <time.h>
-#include "rkrom_29xx.h"
-#include "md5.h"
+#include <openssl/md5.h>
+#include "rkrom.h"
 
 int export_data(const char *filename, unsigned int offset, unsigned int length, FILE *fp)
 {
@@ -74,7 +74,7 @@ int check_md5sum(FILE *fp, size_t length)
 
 int unpack_rom(const char* filepath, const char* dstfile)
 {
-	struct _rkfw_header rom_header;
+	struct rkfw_header rom_header;
 
 	FILE *fp = fopen(filepath, "rb");
 	if (!fp)

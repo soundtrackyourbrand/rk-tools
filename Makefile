@@ -1,5 +1,5 @@
 CC      ?= gcc
-CFLAGS  ?= -O2 -Wall -Wextra -DUSE_OPENSSL
+CFLAGS  ?= -O2 -Wall -Wextra
 LDFLAGS ?= -lcrypto
 PREFIX  ?= usr/local
 

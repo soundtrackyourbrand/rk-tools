@@ -2,3 +2,4 @@ afptool
 img_maker
 mkbootimg
 unmkbootimg
+img_unpack
