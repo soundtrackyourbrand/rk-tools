@@ -1,9 +1,9 @@
 CC      ?= gcc
-CFLAGS  ?= -O2 -Wall -Wextra
+CFLAGS  ?= -O2 -Wall -Wextra -DUSE_OPENSSL
 LDFLAGS ?= -lcrypto
 PREFIX  ?= usr/local
 
-TARGETS = afptool img_maker mkbootimg unmkbootimg
+TARGETS = afptool img_maker mkbootimg unmkbootimg img_unpack
 SCRIPTS = mkrootfs mkupdate mkcpiogz unmkcpiogz
 DEPS    = Makefile rkafp.h rkcrc.h
 
