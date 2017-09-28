@@ -120,9 +120,10 @@ int unpack_update(const char* srcfile, const char* dstdir) {
 		unsigned i;
 		char dir[PATH_MAX];
 
+		printf("name\tfilename\tpos\tsize\n");
 		for (i = 0; i < header.num_parts; i++) {
 			struct update_part *part = &header.parts[i];
-			printf("%s\t0x%08X\t0x%08X\n", part->filename, part->pos,
+			printf("%s\t%s\t0x%08X\t0x%08X\n", part->name, part->filename, part->pos,
 					part->size);
 
 			if (strcmp(part->filename, "SELF") == 0) {
@@ -287,7 +288,9 @@ int action_parse_key(char *key, char *value) {
 
 			param = strtok_r(NULL, " ", &token1);
 		}
-	}
+	} else {
+    printf("Unknown key: '%s'\n", key);
+  }
 	return 0;
 }
 
@@ -558,6 +561,7 @@ int pack_update(const char* srcdir, const char* dstfile) {
 
 	fwrite(&header, sizeof(header), 1, fp);
 
+  printf("name\tfilename\tpos\tnand_addr\tpadded_size\tsize\n");
 	for (i = 0; i < package_image.num_package; ++i) {
 		strcpy(header.parts[i].name, package_image.packages[i].name);
 		strcpy(header.parts[i].filename, package_image.packages[i].filename);
@@ -567,7 +571,6 @@ int pack_update(const char* srcdir, const char* dstfile) {
 		if (strcmp(package_image.packages[i].filename, "SELF") == 0)
 			continue;
 
-		printf("Add file: %s\n", header.parts[i].filename);
 		import_package(fp, &header.parts[i], header.parts[i].filename);
 	}
 
@@ -586,6 +589,9 @@ int pack_update(const char* srcdir, const char* dstfile) {
 			header.parts[i].size = header.length + 4;
 			header.parts[i].padded_size = (header.parts[i].size + 511) / 512 *512;
 		}
+	  struct update_part *p_part = &header.parts[i];
+		printf("%s\t%s\t0x%08X\t0x%08X\t0x%08X\t0x%08X\n", p_part->name, p_part->filename, p_part->pos,
+					p_part->nand_addr, p_part->padded_size, p_part->size);
 	}
 
 	fseek(fp, 0, SEEK_SET);
