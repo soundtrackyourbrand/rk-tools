@@ -130,7 +130,7 @@ int unpack_update(const char* srcfile, const char* dstdir) {
 				continue;
 			}
 
-			// parameter 多出文件头8个字节,文件尾4个字节
+			// parameter More than the first 8 bytes of the file, the end of the file 4 bytes
 			if (memcmp(part->name, "parameter", 9) == 0) {
 				part->pos += 8;
 				part->size -= 12;
@@ -343,7 +343,7 @@ int parse_parameter(const char *fname) {
 
 static struct partition first_partition =
 {
-		"parameter",
+		"parameter_3188_box_x7_r3_4g",
 		0,
 		0x2000
 };
@@ -475,7 +475,7 @@ int import_package(FILE *ofp, struct update_part *pack, const char *path)
 	if (!ifp)
 		return -1;
 
-	if (strcmp(pack->name, "parameter") == 0)
+	if (strcmp(pack->name, "parameter_3188_box_x7_r3_4g") == 0)
 	{
 		unsigned int crc = 0;
 		struct param_header *header = (struct param_header*)buf;
@@ -550,7 +550,7 @@ int pack_update(const char* srcdir, const char* dstfile) {
 	if (chdir(srcdir))
 		return -1;
 
-	if (parse_parameter("parameter"))
+	if (parse_parameter("parameter_3188_box_x7_r3_4g"))
 		return -1;
 
 	if (get_packages("package-file"))
