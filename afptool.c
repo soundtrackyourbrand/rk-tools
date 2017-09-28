@@ -302,9 +302,9 @@ int parse_parameter() {
 	FILE *fp;
 	struct pack_part *parameter_package;
 
-	parameter_package = find_package_byname("parameters");
+	parameter_package = find_package_byname("parameter");
 	if (!parameter_package) {
-		printf("Did not find parameters entry in package-file\n");
+		printf("Did not find 'parameter' entry in package-file\n");
 		return -1;
 	}
 
@@ -385,7 +385,7 @@ struct pack_part* find_package_byname(const char *name)
 	int i;
 	struct pack_part *p_pack;
 
-	for (i = package_image.num_partition - 1; i >= 0; i--)
+	for (i = package_image.num_package - 1; i >= 0; i--)
 	{
 		p_pack = &package_image.packages[i];
 		if (strcmp(p_pack->name, name) == 0)
